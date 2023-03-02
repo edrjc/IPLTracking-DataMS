@@ -2,9 +2,6 @@ from flask_marshmallow.fields import fields
 
 from config import ma
 from models.entities import TelemetryData, GeoData
-from typing import List
-
-'''from swagger_server.models import CreateCustomerResponse'''
 
 
 class TelemetryDataSchema(ma.SQLAlchemyAutoSchema):

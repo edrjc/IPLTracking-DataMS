@@ -15,7 +15,6 @@ from swagger_server.models.error_type_enum import ErrorTypeEnum  # noqa: E501
 from swagger_server.models.get_geo_data_response import GetGeoDataResponse  # noqa: E501
 from swagger_server.models.list_geo_data_response import ListGeoDataResponse  # noqa: E501
 from swagger_server.models.update_geo_data_request import UpdateGeoDataRequest  # noqa: E501
-from swagger_server import util
 
 geo_data_service = GeoDataService()
 geo_data_schema = GeoDataSchema()
@@ -71,9 +70,26 @@ def delete_geo_data(data_id):  # noqa: E501
 
     :rtype: None
     """
-    if connexion.request.is_json:
-        data_id = str.from_dict(connexion.request.get_json())  # noqa: E501
-    return 'do some magic!'
+    response = None
+    response_code = None
+    try:
+        entity = geo_data_service.fetch_by_id(data_id)
+        if entity is None:
+            raise EntityNotFound(code="CST001", message="Geo Data not found",
+                                 details=f"Unable to find Geo Data ID {data_id}")
+        geo_data_service.delete(data_id)
+        response_code = 204
+    except BaseCustomError as bce:
+        response_code = bce.http_code
+        response = bce.to_error_response()
+    except Exception as e:
+        response_code = 500
+        response = ErrorResponse(code="CSM999", type=ErrorTypeEnum.UNKNOWN,
+                                 message="Ops.. Unknown error..", details=str(e))
+    if response is None:
+        return None, response_code
+    else:
+        return response.to_dict(), response_code
 
 
 def get_geo_data(data_id):  # noqa: E501
@@ -86,9 +102,23 @@ def get_geo_data(data_id):  # noqa: E501
 
     :rtype: GetGeoDataResponse
     """
-    if connexion.request.is_json:
-        data_id = str.from_dict(connexion.request.get_json())  # noqa: E501
-    return 'do some magic!'
+    response = None
+    response_code = None
+    try:
+        entity = geo_data_service.fetch_by_id(entity_id=data_id)
+        if entity is None:
+            raise EntityNotFound(code="CST001", message="Data not found",
+                                 details=f"Unable to find data ID {data_id}")
+        response = GetGeoDataResponse.from_dict(json.loads(geo_data_schema.dumps(entity)))
+        response_code = 200
+    except BaseCustomError as bce:
+        response_code = bce.http_code
+        response = bce.to_error_response()
+    except Exception as e:
+        response_code = 500
+        response = ErrorResponse(code="CSM999", type=ErrorTypeEnum.UNKNOWN,
+                                 message="Ops.. Unknown error..", details=str(e))
+    return response.to_dict(), response_code
 
 
 def list_geo_data():  # noqa: E501
@@ -121,8 +151,32 @@ def update_geo_data(body, data_id):  # noqa: E501
 
     :rtype: None
     """
-    if connexion.request.is_json:
+    response = None
+    response_code = None
+    try:
+        if not connexion.request.is_json:
+            raise InvalidPayload(code="CST002", message="Invalid Request Payload",
+                                 details=f"Request payload is not a JSON valid")
         body = UpdateGeoDataRequest.from_dict(connexion.request.get_json())  # noqa: E501
-    if connexion.request.is_json:
-        data_id = str.from_dict(connexion.request.get_json())  # noqa: E501
-    return 'do some magic!'
+        entity = geo_data_service.fetch_by_id(data_id)
+        if entity is None:
+            raise EntityNotFound(code="CST001", message="Geo Data not found",
+                                 details=f"Unable to find Geo Data ID {data_id}")
+        entity.time = body.time
+        entity.latitude = body.latitude
+        entity.longitude = body.longitude
+        entity.altimeter = body.altimeter
+        geo_data_service.save(entity)
+        response_code = 204
+    except BaseCustomError as bce:
+        response_code = bce.http_code
+        response = bce.to_error_response()
+    except Exception as e:
+        response_code = 500
+        response = ErrorResponse(code="CSM999", type=ErrorTypeEnum.UNKNOWN,
+                                 message="Ops.. Unknown error..", details=str(e))
+
+    if response is None:
+        return None, response_code
+    else:
+        return response.to_dict(), response_code
