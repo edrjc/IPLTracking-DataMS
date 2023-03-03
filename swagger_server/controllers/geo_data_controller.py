@@ -37,6 +37,9 @@ def create_geo_data(body):  # noqa: E501
             raise InvalidPayload(code="CST002", message="Invalid Request Payload",
                                  details=f"Request payload is not a JSON valid")
         body = CreateGeoDataRequest.from_dict(connexion.request.get_json())  # noqa: E501
+        if not GeoDataService.has_vehicle(body.vehicle_id):
+            raise EntityNotFound(code="", message='Vehicle Not Found', details='It is not possible to add Data to a non'
+                                                                               'existing vehicle')
         entity = GeoData(
             data_id=None,
             vehicle_id=body.vehicle_id,

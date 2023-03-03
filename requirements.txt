@@ -12,3 +12,6 @@ marshmallow-sqlalchemy==0.28.1
 psycopg2
 SQLAlchemy~=1.4.41
 six~=1.16.0
+
+requests~=2.28.2
+alembic~=1.9.4

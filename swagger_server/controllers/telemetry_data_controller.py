@@ -37,6 +37,9 @@ def create_telemetry_data(body):  # noqa: E501
             raise InvalidPayload(code="CST002", message="Invalid Request Payload",
                                  details=f"Request payload is not a JSON valid")
         body = CreateTelemetryDataRequest.from_dict(connexion.request.get_json())  # noqa: E501
+        if not TelemetryDataService.has_vehicle(body.vehicle_id):
+            raise EntityNotFound(code="", message='Vehicle Not Found', details='It is not possible to add Data to a non'
+                                                                               'existing vehicle')
         entity = TelemetryData(
             data_id=None,
             vehicle_id=body.vehicle_id,

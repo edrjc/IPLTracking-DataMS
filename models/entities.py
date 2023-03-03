@@ -1,5 +1,3 @@
-from sqlalchemy.orm import relationship
-
 from config import db
 from sqlalchemy.dialects.postgresql import UUID
 import uuid
@@ -26,8 +24,8 @@ class Data(db.Model):
         return 'Data(data_id=%d)' % (
             self.data_id)
 
-    '''def json(self):
-        return {'customer_id': str(self.customer_id), 'name': self.name, 'phone': self.phone, 'mail': self.mail}'''
+    def json(self):
+        return {'data_id': str(self.data_id), 'vehicle_id': str(self.vehicle_id), 'time': self.time}
 
 
 class TelemetryData(Data):
@@ -50,8 +48,9 @@ class TelemetryData(Data):
         return 'Data(data_id=%d)' % (
             self.data_id)
 
-    '''def json(self):
-        return {'customer_id': str(self.customer_id), 'name': self.name, 'phone': self.phone, 'mail': self.mail}'''
+    def json(self):
+        return {'data_id': str(self.data_id), 'vehicle_id': str(self.vehicle_id), 'time': self.time,
+                'sensor_type': self.sensor_type, 'value': self.value}
 
 
 class GeoData(Data):
@@ -76,5 +75,6 @@ class GeoData(Data):
         return 'Data(data_id=%d)' % (
             self.data_id)
 
-    '''def json(self):
-        return {'customer_id': str(self.customer_id), 'name': self.name, 'phone': self.phone, 'mail': self.mail}'''
+    def json(self):
+        return {'data_id': str(self.data_id), 'vehicle_id': str(self.vehicle_id), 'time': self.time,
+                'latitude': self.latitude, 'longitude': self.longitude, 'altimeter': self.altimeter}

@@ -14,4 +14,4 @@ ma = Marshmallow(app)
 db = SQLAlchemy(app)
 alembic = Alembic(app)
 
-
+vehicle_ms_url = 'http://localhost:8083/tracking/vehicles/{}'
