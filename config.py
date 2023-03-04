@@ -15,3 +15,4 @@ db = SQLAlchemy(app)
 alembic = Alembic(app)
 
 vehicle_ms_url = 'http://localhost:8083/tracking/vehicles/{}'
+telemetry_profile_ms_url = 'http://localhost:8080/tracking/telemetryprofiles/{}'

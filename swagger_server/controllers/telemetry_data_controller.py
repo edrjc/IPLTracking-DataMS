@@ -40,6 +40,10 @@ def create_telemetry_data(body):  # noqa: E501
         if not TelemetryDataService.has_vehicle(body.vehicle_id):
             raise EntityNotFound(code="", message='Vehicle Not Found', details='It is not possible to add Data to a non'
                                                                                'existing vehicle')
+        if not TelemetryDataService.is_valid_telemetry(body.vehicle_id, body.sensor_type, body.value):
+            raise EntityNotFound(code="", message='Telemetry Not Valid', details='Either the sensor is not a valid '
+                                                                                 'type for the vehicle or the value '
+                                                                                 'is out of the accepted range')
         entity = TelemetryData(
             data_id=None,
             vehicle_id=body.vehicle_id,
